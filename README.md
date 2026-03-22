@@ -1,39 +1,107 @@
-# 💳 API de Gerenciamento de Pagamentos - Desafio Técnico
+# 💳 API de Gerenciamento de Pagamentos (Desafio Técnico)
 
-Bem-vindo ao repositório da API de Pagamentos - De Carlos Eduardo - Desenvolvedor Java! Este projeto é uma API RESTful desenvolvida para gerenciar o recebimento e o processamento de pagamentos, simulando uma máquina de estados rigorosa e aplicando regras de exclusão lógica.
+Esta é uma API RESTful desenvolvida em **Java 17** com **Spring Boot**, focada no processamento de pagamentos, controle de estados e persistência de dados com **H2 Database**.
 
-> 📌 **Nota de Organização:** O repositório e a pasta raiz foram nomeados como `carlos-eduardo-desafio-tecnico` pensando na comodidade da equipe de avaliação, prevenindo conflitos de diretórios (como pastas duplicadas) ao clonar o projeto na máquina local.
-
----
-
-## 🛠️ Tecnologias Utilizadas
-
-O projeto foi construído focando em simplicidade, código limpo e facilidade de execução:
-* **Java 17 (LTS)**
-* **Spring Boot** (Web, Data JPA)
-* **H2 Database** (Banco de dados em memória para facilitar os testes)
-* **Lombok** (Redução de código boilerplate)
-* **Docker** (Conteinerização da aplicação)
-* **Postman / Insomnia** (Para validação dos endpoints)
+> 📌 **Diferencial de Organização:** O projeto utiliza **Docker Multi-stage Build**. Não precisa configurar Java ou Gradle localmente; o Docker compila e roda a aplicação inteiramente isolada.
 
 ---
 
-## ⚙️ Máquina de Estados e Regras de Negócio
-
-API garante a integridade dos dados através das seguintes regras:
-1. Todo pagamento nasce obrigatoriamente com o status `PENDENTE_PROCESSAMENTO`.
-2. Um pagamento pendente pode transitar para `PROCESSADO_SUCESSO` ou `PROCESSADO_FALHA`.
-3. **Bloqueio de Sucesso:** Se o pagamento atingir `PROCESSADO_SUCESSO`, seu status não poderá mais ser alterado.
-4. **Ciclo de Falha:** Se o pagamento atingir `PROCESSADO_FALHA`, ele só poderá retroceder para `PENDENTE_PROCESSAMENTO`.
-5. **Exclusão Lógica:** Pagamentos só podem ser inativados (`ativo = false`) se estiverem com o status pendente.
+## 🛠️ Tecnologias e Padrões
+* **Java 17 & Spring Boot 3**
+* **Spring Data JPA** (Persistência)
+* **H2 Database** (Banco em memória)
+* **Lombok** (Produtividade)
+* **Docker** (Conteinerização profissional)
+* **Exclusão Lógica (Soft Delete):** Registros inativados permanecem no banco.
 
 ---
 
-## 🐳 Como Executar o Projeto (Via Docker)
+## ⚙️ Máquina de Estados (Regras de Negócio)
+API garante a integridade financeira através de transições validadas:
+1. Todo pagamento inicia como `PENDENTE_PROCESSAMENTO`.
+2. Pode transitar para `PROCESSADO_SUCESSO` ou `PROCESSADO_FALHA`.
+3. **Trava de Segurança:** Um status `PROCESSADO_SUCESSO` é um estado final e **não permite** novas alterações, evitando fraudes ou erros de duplicidade.
 
-O projeto foi totalmente conteinerizado. **Não é necessário abrir a aplicação em uma IDE para testar.** Basta ter o Docker instalado e rodando.
+---
 
-**Passo 1: Clone o repositório**
-Abra o seu terminal e baixe o projeto:
+## 🐳 Como Executar Docker (Passo a Passo)
+
+### 1. Clonar e Acessar
 ```bash
 git clone [https://github.com/CarlosssEduardo/carlos-eduardo-desafio-tecnico.git](https://github.com/CarlosssEduardo/carlos-eduardo-desafio-tecnico.git)
+cd carlos-eduardo-desafio-tecnico
+````
+
+### 2\. Construir a Imagem (Build)
+
+O Docker baixará as dependências e compilará o projeto automaticamente:
+
+```bash
+docker build -t api-pagamentos .
+```
+
+### 3\. Rodar a Aplicação
+
+Para rodar na porta padrão (`8081`), utilize:
+
+```bash
+docker run -p 8081:8081 api-pagamentos
+```
+
+> 💡 **Dica de Infraestrutura:** Caso a porta `8081` já esteja ocupada em sua máquina, você pode mapear para qualquer outra porta local (Ex: `8090`) alterando o comando para:
+> `docker run -p 8090:8081 api-pagamentos`
+> *(Nesse caso, a API responderá em http://localhost:8090)*
+
+-----
+
+## 🧪 Guia de Testes (Postman/Insomnia)
+
+### 1\. Criar Pagamento (POST)
+
+**URL:** `http://localhost:8081/pagamentos` (ou a porta escolhida no passo anterior)
+
+**Exemplo PIX:**
+
+```json
+{
+  "codigoDebito": 101,
+  "cpfCnpj": "123.456.789-00",
+  "metodoPagamento": "PIX",
+  "valor": 50.00
+}
+```
+
+**Exemplo Cartão de Crédito:**
+
+```json
+{
+  "codigoDebito": 102,
+  "cpfCnpj": "123.456.789-00",
+  "metodoPagamento": "CARTAO_CREDITO",
+  "numeroCartao": "4444555566667777",
+  "valor": 250.00
+}
+```
+
+**Exemplo Boleto:**
+
+```json
+{
+  "codigoDebito": 103,
+  "cpfCnpj": "00.123.456/0001-00",
+  "metodoPagamento": "BOLETO",
+  "valor": 150.00
+}
+```
+
+### 2\. Alterar Status (PUT)
+
+Mude o status para validar a regra de negócio: (Verifica porta escolhida)
+`PUT http://localhost:8081/pagamentos/{id}/status?novoStatus=PROCESSADO_SUCESSO`
+
+### 3\. Exclusão Lógica (DELETE)
+
+Inative um pagamento pendente: (Verifica porta escolhida)
+`DELETE http://localhost:8081/pagamentos/{id}`
+
+-----
