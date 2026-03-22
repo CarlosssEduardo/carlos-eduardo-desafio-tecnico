@@ -16,7 +16,7 @@ Esta é uma API RESTful desenvolvida em **Java 17** com **Spring Boot**, focada 
 
 ---
 
-## ⚙️ Máquina de Estados (Regras de Negócio)
+## ⚙️ Regras de Negócio
 API garante a integridade financeira através de transições validadas:
 1. Todo pagamento inicia como `PENDENTE_PROCESSAMENTO`.
 2. Pode transitar para `PROCESSADO_SUCESSO` ou `PROCESSADO_FALHA`.
@@ -24,15 +24,26 @@ API garante a integridade financeira através de transições validadas:
 
 ---
 
-## 🐳 Como Executar Docker (Passo a Passo)
+## 🐳 Como Executar no Docker (Passo a Passo)
+### Passo 0: Preparação
+Abra o seu terminal (CMD ou PowerShell) e navegue até a pasta onde deseja salvar o projeto.
+*Exemplo para salvar na Área de Trabalho:*
+```bash
+cd Desktop
+````
 
 ### 1. Clonar e Acessar
 ```bash
-git clone [https://github.com/CarlosssEduardo/carlos-eduardo-desafio-tecnico.git](https://github.com/CarlosssEduardo/carlos-eduardo-desafio-tecnico.git)
-cd carlos-eduardo-desafio-tecnico
+git clone https://github.com/CarlosssEduardo/carlos-eduardo-desafio-tecnico.git
+
 ````
 
-### 2\. Construir a Imagem (Build)
+### 2\. Acessar a Pastar
+
+```bash
+cd carlos-eduardo-desafio-tecnico.
+```
+### 3\. Construir a Imagem (Build)
 
 O Docker baixará as dependências e compilará o projeto automaticamente:
 
@@ -40,7 +51,7 @@ O Docker baixará as dependências e compilará o projeto automaticamente:
 docker build -t api-pagamentos .
 ```
 
-### 3\. Rodar a Aplicação
+### 4\. Rodar a Aplicação
 
 Para rodar na porta padrão (`8081`), utilize:
 
@@ -96,12 +107,14 @@ docker run -p 8081:8081 api-pagamentos
 
 ### 2\. Alterar Status (PUT)
 
-Mude o status para validar a regra de negócio: (Verifica porta escolhida)
+Mude o status para validar a regra de negócio
+⚠️ Atenção: Caso você altere a porta no comando do Docker, lembre-se de atualizar a URL das requisições abaixo para a nova porta escolhida:
 `PUT http://localhost:8081/pagamentos/{id}/status?novoStatus=PROCESSADO_SUCESSO`
 
 ### 3\. Exclusão Lógica (DELETE)
 
-Inative um pagamento pendente: (Verifica porta escolhida)
+Inative um pagamento pendente
+⚠️ Atenção: Caso você altere a porta no comando do Docker, lembre-se de atualizar a URL das requisições abaixo para a nova porta escolhida:
 `DELETE http://localhost:8081/pagamentos/{id}`
 
 -----
