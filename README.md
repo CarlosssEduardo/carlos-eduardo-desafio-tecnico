@@ -111,10 +111,43 @@ Mude o status para validar a regra de negócio
 ⚠️ Atenção: Caso você altere a porta no comando do Docker, lembre-se de atualizar a URL das requisições abaixo para a nova porta escolhida:
 `PUT http://localhost:8081/pagamentos/{id}/status?novoStatus=PROCESSADO_SUCESSO`
 
-### 3\. Exclusão Lógica (DELETE)
+
+### 3\. Como Listar TODOS os Pagamentos
+Mude o status para validar a regra de negócio
+⚠️ Atenção: Caso você altere a porta no comando do Docker, lembre-se de atualizar a URL das requisições abaixo para a nova porta escolhida:
+`GET http://localhost:8081/pagamentos`
+
+### 4. Como Fazer Buscas com Filtros (Query Params)
+Para buscar pagamentos específicos (ex: só os que estão pendentes ou de um CPF específico), usamos os chamados **Query Parameters** (parâmetros de consulta). No Postman, isso é super visual:
+
+1. Deixe o método como **`GET`** e a URL base como `http://localhost:8081/pagamentos`.
+2. Logo abaixo da barra de URL, clique na aba **Params** (geralmente já vem selecionada por padrão).
+3. Você verá uma tabelinha com "Key" (Chave) e "Value" (Valor). É aqui que você monta os seus filtros.
+
+**Exemplo Prático 1: Filtrar por Status**
+* Na coluna **Key**, digite: `status`
+* Na coluna **Value**, digite: `PENDENTE_PROCESSAMENTO`
+  *(Note que o Postman vai montar a URL automaticamente lá em cima para: `http://localhost:8081/pagamentos?status=PENDENTE_PROCESSAMENTO`)*. Clique em **Send**.
+
+**Exemplo Prático 2: Filtrar por CPF/CNPJ**
+* Na coluna **Key**, digite: `cpfCnpj`
+* Na coluna **Value**, digite: `123.456.789-00`
+* Clique em **Send**.
+
+**Exemplo Prático 3: Combinar Filtros**
+Você pode usar várias linhas da tabela "Params" ao mesmo tempo!
+* Linha 1 -> Key: `metodoPagamento` | Value: `PIX`
+* Linha 2 -> Key: `status` | Value: `PROCESSADO_SUCESSO`
+  *(A URL ficará: `http://localhost:8081/pagamentos?metodoPagamento=PIX&status=PROCESSADO_SUCESSO`)*.
+
+
+### 5\. Exclusão Lógica (DELETE)
 
 Inative um pagamento pendente
 ⚠️ Atenção: Caso você altere a porta no comando do Docker, lembre-se de atualizar a URL das requisições abaixo para a nova porta escolhida:
 `DELETE http://localhost:8081/pagamentos/{id}`
 
+
+
 -----
+
